@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Refinix — private agent workbench for confidential industrial work</title>
+<!-- The intro clip's poster is the first pixel anyone sees, so it is fetched
+     ahead of the stylesheet rather than waiting to be discovered on the
+     <video> further down. The only preloaded image on the page. -->
+<link rel="preload" as="image" href="assets/hero-poster.jpg" fetchpriority="high">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Bodoni+Moda:opsz,wght@6..96,400..800&family=IBM+Plex+Mono:wght@400;500;600&family=Michroma&family=Pixelify+Sans:wght@400;500;600;700&family=Spectral:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="site.css">
 </head>
@@ -145,13 +149,20 @@
 
 <div class="intro" id="intro">
   <canvas class="net" aria-hidden="true"></canvas>
-  <video class="intro-video" autoplay muted loop playsinline preload="auto">
-    <!-- The supplied master first, so a served copy plays it untouched. Any
-         transcode is a generation of loss; this avoids it entirely. The WebM
-         is only a fallback: a single-file build cannot carry a 15 MB master,
-         so there the mp4 404s and the browser moves to the next source. -->
+  <video class="intro-video" autoplay muted loop playsinline preload="auto"
+         poster="assets/hero-poster.jpg">
+    <!-- The poster is the point: this clip is the first thing anyone sees, and
+         without it the viewport stayed empty until enough video had arrived to
+         decode a frame. The poster paints immediately and the clip replaces it.
+
+         WebM first, master second — the reverse of the earlier order. Serving
+         the master first meant every visitor pulled 15 MB before playback, and
+         since the browser takes the first source it supports, nothing else was
+         ever reached. The WebM is the same 31 s at 30 fps, VP9 CRF 38, and is
+         a third of the size; the mp4 remains for anything without VP9. Neither
+         carries audio, because this element is muted. -->
+    <source src="assets/hero-loop.webm" type="video/webm">
     <source src="assets/hero-loop.mp4" type="video/mp4">
-    <source src="assets/intro.webm" type="video/webm">
   </video>
   <span class="bolt" aria-hidden="true"></span>
   <span class="bolt b" aria-hidden="true"></span>
@@ -589,6 +600,10 @@
         <figure class="plate plate-clip reveal d2">
           <video class="evidence-clip" autoplay muted loop playsinline preload="metadata"
                  aria-label="Motion graphic: configuration and measurement icons animating.">
+            <!-- WebM first here too, for the same reason as the intro clip. This
+                 one is below the fold and stays on preload="metadata", so it
+                 costs nothing until it is scrolled to. -->
+            <source src="assets/evidence-loop.webm" type="video/webm">
             <source src="assets/evidence-loop.mp4" type="video/mp4">
           </video>
         </figure>
